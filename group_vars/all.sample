@@ -1,0 +1,24 @@
+esxi_ip: 123.456.0.789
+esxi_hostname: example.com
+esxi_username: root
+esxi_password: password
+
+vms:
+  testOne:
+    hd_gb: 10
+    network_name: LAN
+    memory_mb: 512
+    num_cpus: 1
+    vdisk_datastore: VMs
+    vdisk_folder: test
+    iso_datastore: VMs
+    iso_path: ISOs/ubuntu-16.04.1-server-amd64.iso
+  testTwo:
+    hd_gb: 10
+    network_name: LAN
+    memory_mb: 512
+    num_cpus: 1
+    vdisk_datastore: VMs
+    vdisk_folder: test
+    iso_datastore: VMs
+    iso_path: ISOs/ubuntu-16.04.1-server-amd64.iso
