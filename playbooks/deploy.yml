@@ -7,6 +7,7 @@
   # load AWS variables from this group vars file
   vars_files:
   - ../group_vars/all
+  - ../group_vars/{{ env }}
 
   tasks:
   - name: Add ESXi Host(s)
@@ -19,7 +20,7 @@
       password: "{{ esxi_password }}"
       validate_certs: no
 
-      guest: '{{ item.key }}'
+      guest: "{{ env }} + _ + {{ item.key }}"
       state: powered_on
       vm_extra_config:
         vcpu.hotadd: no
