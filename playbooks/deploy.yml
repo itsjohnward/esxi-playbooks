@@ -20,7 +20,7 @@
       password: "{{ esxi_password }}"
       validate_certs: no
 
-      guest: "{{ env }} + _ + {{ item.key }}"
+      guest: "{{ env }}_{{ item.key }}"
       state: powered_on
       vm_extra_config:
         vcpu.hotadd: no
