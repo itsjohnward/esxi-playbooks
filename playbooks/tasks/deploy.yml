@@ -1,16 +1,5 @@
 ---
-- name: Provision instances
-  hosts: localhost
-  connection: local
-  gather_facts: False
-
-  # load AWS variables from this group vars file
-  vars_files:
-  - ../group_vars/all
-  - ../group_vars/{{ env }}
-
-  tasks:
-  - name: Add ESXi Host(s)
+  - name: Add {{ env }}_{{ item.key }} to ESXi
     vsphere_guest:
       vcenter_hostname: "{{ esxi_ip }}" # ip address of hypervisor
       esxi:
@@ -49,4 +38,3 @@
         vm_cdrom:
           type: "iso"
           iso_path: "{{ item.value.iso_datastore }}/{{ item.value.iso_path }}"
-    with_dict: "{{ vms }}"

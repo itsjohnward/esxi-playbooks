@@ -1,0 +1,35 @@
+---
+- name: Provision instances
+  hosts: localhost
+  connection: local
+  gather_facts: False
+
+  # load AWS variables from this group vars file
+  vars_files:
+  - ../group_vars/all
+  - ../group_vars/{{ env }}
+
+  tasks:
+    - name: "Deploy TestOne"
+      include: tasks/deploy.yml
+      vars:
+        item: { key: testOne, value: "{{ vms.testOne }}" }
+      tags:
+        - all
+        - test
+
+    - name: "Deploy TestTwo"
+      include: tasks/deploy.yml
+      vars:
+        item: { key: testTwo, value: "{{ vms.testTwo }}" }
+      tags:
+        - all
+        - test
+
+    - name: "Deploy Ansible"
+      include: tasks/deploy.yml
+      vars:
+        item: { key: ansible, value: "{{ vms.ansible }}" }
+      tags:
+        - all
+        - ansible
