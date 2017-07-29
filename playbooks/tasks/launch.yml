@@ -1,0 +1,77 @@
+---
+  - name: Add {{ env }}_{{ item.key }} to ESXi
+    vsphere_guest:
+      vcenter_hostname: "{{ esxi_ip }}" # ip address of hypervisor
+      esxi:
+        datacenter: ha-datacenter
+        hostname: "{{ esxi_hostname }}" # name shown in hypervisor console
+      username: "{{ esxi_username }}"
+      password: "{{ esxi_password }}"
+      validate_certs: no
+
+      guest: "{{ env }}_{{ item.key }}"
+      state: powered_on
+      vm_extra_config:
+        vcpu.hotadd: no
+        mem.hotadd:  no
+        notes: This is a test VM
+        #folder: MyFolder
+      vm_disk:
+        disk1:
+          size_gb: '{{ item.value.hd_gb }}'
+          type: thin
+          datastore: '{{ item.value.vdisk_datastore }}'
+          # VMs can be put into folders. The value given here is either the full path
+          # to the folder (e.g. production/customerA/lamp) or just the last component
+          # of the path (e.g. lamp):
+          folder: '{{ item.value.vdisk_folder }}'
+      vm_nic:
+        nic1:
+          type: vmxnet3
+          network: '{{ item.value.network_name }}'
+          network_type: standard
+      vm_hardware:
+        memory_mb: '{{ item.value.memory_mb }}'
+        num_cpus: '{{ item.value.num_cpus }}'
+        osid: ubuntu64Guest
+        scsi: paravirtual
+        vm_cdrom:
+          type: "iso"
+          iso_path: "{{ item.value.iso_datastore }}/{{ item.value.iso_path }}"
+
+  - name: Wait until SSH is available
+    local_action:
+      module: wait_for
+      host: ubuntu.john
+      port: 22
+      delay: 60
+      timeout: 1800
+      state: started
+
+  - name: Change hostname to {{ env }}-{{ item.key }}
+    command: "sed -i '2s/.*/127.0.1.1       {{ env }}-{{ item.key }}.{{ env }}-{{ item.key }} {{ env }}-{{ item.key }}'/ /etc/hosts"
+    delegate_to: ubuntu.john
+    become: true
+    become_user: root
+
+  - name: Update hosts file
+    command: "hostnamectl set-hostname {{ env }}-{{ item.key }}"
+    delegate_to: ubuntu.john
+    become: true
+    become_user: root
+
+  - name: Reboot ubuntu.john
+    command: "reboot"
+    delegate_to: ubuntu.john
+    become: true
+    become_user: root
+    ignore_errors: yes # will fail because restart cannot send response
+
+  - name: Wait until SSH is available
+    local_action:
+      module: wait_for
+      host: "{{ env }}-{{ item.key }}.john"
+      port: 22
+      delay: 15
+      timeout: 300
+      state: started
