@@ -10,24 +10,33 @@
   - ../group_vars/{{ env }}
 
   tasks:
-    - name: "Deploy TestOne"
-      include: tasks/deploy.yml
+    - name: "Launch TestOne"
+      include: tasks/launch.yml
       vars:
         item: { key: testOne, value: "{{ vms.testOne }}" }
       tags:
         - all
-        - test
+        - testOne
 
-    - name: "Deploy TestTwo"
-      include: tasks/deploy.yml
+    - name: "Launch TestTwo"
+      include: tasks/launch.yml
       vars:
         item: { key: testTwo, value: "{{ vms.testTwo }}" }
       tags:
         - all
-        - test
+        - testTwo
+
+    - name: "Launch Ansible"
+      include: tasks/launch.yml
+      vars:
+        item: { key: ansible, value: "{{ vms.ansible }}" }
+      tags:
+        - all
+        - ansible
 
     - name: "Deploy Ansible"
-      include: tasks/deploy.yml
+      include: tasks/deploy/ansible.yml
+      delegate_to: "{{ env }}-ansible.john"
       vars:
         item: { key: ansible, value: "{{ vms.ansible }}" }
       tags:
