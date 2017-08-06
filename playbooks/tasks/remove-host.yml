@@ -1,0 +1,37 @@
+---
+  # Shutdown the vm if it's on
+  - name: Remove {{ env }}-{{ item.key }} if present
+    vsphere_guest:
+      vcenter_hostname: "{{ esxi_ip }}" # ip address of hypervisor
+      esxi:
+        datacenter: ha-datacenter
+        hostname: "{{ esxi_hostname }}" # name shown in hypervisor console
+      username: "{{ esxi_username }}"
+      password: "{{ esxi_password }}"
+      guest: "{{ env }}-{{ item.key }}"
+      state: powered_off
+      force: yes
+      validate_certs: no
+
+  - name: Wait 20 seconds for {{ env }}-{{ item.key }} to shutdown
+    pause:
+      seconds: 5
+
+  # Remove a vm from vSphere
+  # The VM must be powered_off or you need to use force to force a shutdown
+  - name: Remove {{ env }}-{{ item.key }} if present
+    vsphere_guest:
+      vcenter_hostname: "{{ esxi_ip }}" # ip address of hypervisor
+      esxi:
+        datacenter: ha-datacenter
+        hostname: "{{ esxi_hostname }}" # name shown in hypervisor console
+      username: "{{ esxi_username }}"
+      password: "{{ esxi_password }}"
+      guest: "{{ env }}-{{ item.key }}"
+      state: absent
+      force: yes
+      validate_certs: no
+
+  - name: Wait 20 seconds for {{ env }}-{{ item.key }} to be deleted
+    pause:
+      seconds: 5

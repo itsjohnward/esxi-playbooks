@@ -1,8 +1,11 @@
 ---
   - name: Install ansible package
-    command: "apt-get install -y ansible"
+    command: "apt install -y ansible git"
     become: true
     become_user: root
 
   - name: Clone git repo
     command: "git clone https://github.com/itsjohnward/esxi-playbooks.git"
+
+  - name: Clone git repo
+    command: "git clone https://github.com/itsjohnward/ubuntu-unattended.git"

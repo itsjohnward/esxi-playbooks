@@ -9,7 +9,7 @@
       password: "{{ esxi_password }}"
       validate_certs: no
 
-      guest: "{{ env }}_{{ item.key }}"
+      guest: "{{ env }}-{{ item.key }}"
       state: powered_on
       vm_extra_config:
         vcpu.hotadd: no
@@ -45,20 +45,23 @@
       host: ubuntu.john
       port: 22
       delay: 60
-      timeout: 1800
+      timeout: 1400
       state: started
+    ignore_errors: yes # in case hostname is already set for some reason
 
   - name: Change hostname to {{ env }}-{{ item.key }}
     command: "sed -i '2s/.*/127.0.1.1       {{ env }}-{{ item.key }}.{{ env }}-{{ item.key }} {{ env }}-{{ item.key }}'/ /etc/hosts"
     delegate_to: ubuntu.john
     become: true
     become_user: root
+    ignore_errors: yes # in case hostname is already set for some reason
 
   - name: Update hosts file
     command: "hostnamectl set-hostname {{ env }}-{{ item.key }}"
     delegate_to: ubuntu.john
     become: true
     become_user: root
+    ignore_errors: yes # in case hostname is already set for some reason
 
   - name: Reboot ubuntu.john
     command: "reboot"
