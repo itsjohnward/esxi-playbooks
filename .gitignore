@@ -3,5 +3,4 @@ group_vars/dev
 group_vars/prod
 hosts
 playbooks/*.retry
-packer-builds/
 packer_cache/
